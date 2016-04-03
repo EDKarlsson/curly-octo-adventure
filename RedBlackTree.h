@@ -12,12 +12,21 @@ class RedBlackTree
     public:
         RedBlackTree();
 
-        void insert(RBNode *insertNode);
+        void insert(int key, std::string value);
+
+        void remove(int key);
+
+        bool findKey(int key);
+
+        std::string getValue(int key);
+
+        bool isEmpty() const;
+
+        int getSize() const;
+
 
     private:
         RBNode *_root;
-
-        int height;
 
         int size;
 
@@ -36,6 +45,10 @@ class RedBlackTree
         RBNode *minimum(RBNode *x);
 
         RBNode *maximum(RBNode *x);
+
+        RBNode *findNode(RBNode *x, int key);
+
+        void insertNode(RBNode *insertNode);
 };
 
 #endif //RED_BLACK_TREE_DICTIONARY_REDBLACKTREE_H

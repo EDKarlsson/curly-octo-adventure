@@ -7,6 +7,8 @@
 RedBlackTree::RedBlackTree()
 {
     this->_root = nullptr;
+    this->size = 0;
+    this->height = 0;
 }
 
 void RedBlackTree::rotateLeft(RBNode *x)
@@ -105,7 +107,13 @@ void RedBlackTree::rotateRight(RBNode *y)
 
 }
 
-void RedBlackTree::insert(RBNode *insertNode)
+/**
+ * insertNode
+ * -----
+ *
+ *
+ */
+void RedBlackTree::insertNode(RBNode *insertNode)
 {
     RBNode *y;
     RBNode *x;
@@ -157,65 +165,69 @@ void RedBlackTree::insert_fixup(RBNode *z)
 {
     RBNode *y;
 
-    while (z->getParent()->getNodeColor() == RED)
+    if (z != this->_root)
     {
-        // Check to see if the violation is occurring on the left side of the tree
-        if (z->getParent() == z->getParent()->getParent()->getLeft())
-        {
-            y = z->getParent()->getParent()->getRight();
 
-            // Case 1: If the color of z's grandparent's right child is red
-            if (y->getNodeColor() == RED)
+        while (z->getParent()->getNodeColor() == RED)
+        {
+            // Check to see if the violation is occurring on the left side of the tree
+            if (z->getParent() == z->getParent()->getParent()->getLeft())
             {
-                z->getParent()->setNodeColor(BLACK);
-                y->setNodeColor(BLACK);
-                z->getParent()->getParent()->setNodeColor(RED);
-                z = z->getParent()->getParent();
+                y = z->getParent()->getParent()->getRight();
+
+                // Case 1: If the color of z's grandparent's right child is red
+                if (y->getNodeColor() == RED)
+                {
+                    z->getParent()->setNodeColor(BLACK);
+                    y->setNodeColor(BLACK);
+                    z->getParent()->getParent()->setNodeColor(RED);
+                    z = z->getParent()->getParent();
+                }
+                else
+                {
+                    // Case 2:
+                    if (z == z->getParent()->getRight())
+                    {
+                        z = z->getParent();
+                        rotateLeft(z);
+                    }
+
+                    // Case 3: Case 2 falls through into case 3 because these two cases are not mutually exclusive
+                    z->getParent()->setNodeColor(BLACK);
+                    z->getParent()->getParent()->setNodeColor(RED);
+                    rotateRight(z->getParent()->getParent());
+                }
             }
             else
             {
-                // Case 2:
-                if (z == z->getParent()->getRight())
+                // Checking the violation on the right side of the tree.
+                y = z->getParent()->getParent()->getLeft();
+
+                // Case 1: If the color of z's grandparent's right child is red
+                if (y->getNodeColor() == RED)
                 {
-                    z = z->getParent();
-                    rotateLeft(z);
+                    z->getParent()->setNodeColor(BLACK);
+                    y->setNodeColor(BLACK);
+                    z->getParent()->getParent()->setNodeColor(RED);
+                    z = z->getParent()->getParent();
                 }
-
-                // Case 3: Case 2 falls through into case 3 because these two cases are not mutually exclusive
-                z->getParent()->setNodeColor(BLACK);
-                z->getParent()->getParent()->setNodeColor(RED);
-                rotateRight(z->getParent()->getParent());
-            }
-        }
-        else
-        {
-            // Checking the violation on the right side of the tree.
-            y = z->getParent()->getParent()->getLeft();
-
-            // Case 1: If the color of z's grandparent's right child is red
-            if (y->getNodeColor() == RED)
-            {
-                z->getParent()->setNodeColor(BLACK);
-                y->setNodeColor(BLACK);
-                z->getParent()->getParent()->setNodeColor(RED);
-                z = z->getParent()->getParent();
-            }
-            else
-            {
-                // Case 2:
-                if (z == z->getParent()->getLeft())
+                else
                 {
-                    z = z->getParent();
-                    // DEBUG: IF there are issues where to tree is not behaving the way it should then I may need to switch
-                    //      the rotateRight and rotateLeft methods
-                    rotateRight(z);
-                }
+                    // Case 2:
+                    if (z == z->getParent()->getLeft())
+                    {
+                        z = z->getParent();
+                        // DEBUG: IF there are issues where to tree is not behaving the way it should then I may need to switch
+                        //      the rotateRight and rotateLeft methods
+                        rotateRight(z);
+                    }
 
-                // Case 3: Case 2 falls through into case 3 because these two cases are not mutually exclusive
-                z->getParent()->setNodeColor(BLACK);
-                z->getParent()->getParent()->setNodeColor(RED);
-                // DEBUG: May need to switch this to rotateRight
-                rotateLeft(z->getParent()->getParent());
+                    // Case 3: Case 2 falls through into case 3 because these two cases are not mutually exclusive
+                    z->getParent()->setNodeColor(BLACK);
+                    z->getParent()->getParent()->setNodeColor(RED);
+                    // DEBUG: May need to switch this to rotateRight
+                    rotateLeft(z->getParent()->getParent());
+                }
             }
         }
     }
@@ -312,38 +324,89 @@ void RedBlackTree::deleteNode(RBNode *deleteNode)
 
 void RedBlackTree::delete_fixup(RBNode *x)
 {
-    RBNode* w;
+    RBNode *w;
 
     while (x != this->_root && x->getNodeColor() == BLACK)
     {
-        w = x->getParent()->getRight();
-
-        // Case 1:
-        if (w->getNodeColor() == RED)
+        if (x == x->getParent()->getLeft())
         {
-            w->setNodeColor(BLACK);
-            x->getParent()->setNodeColor(RED);
-            rotateLeft(x->getParent());
+
             w = x->getParent()->getRight();
-        }
 
-        // Case 2:
-        if (w->getLeft()->getNodeColor() == BLACK && w->getRight()->getNodeColor() == BLACK)
-        {
-            w->setNodeColor(RED);
+            // Case 1:
+            if (w->getNodeColor() == RED)
+            {
+                w->setNodeColor(BLACK);
+                x->getParent()->setNodeColor(RED);
+                rotateLeft(x->getParent());
+                w = x->getParent()->getRight();
+            }
 
-            // Move X up one level
-            x = x->getParent();
+            // Case 2:
+            if (w->getLeft()->getNodeColor() == BLACK && w->getRight()->getNodeColor() == BLACK)
+            {
+                w->setNodeColor(RED);
+
+                // Move X up one level
+                x = x->getParent();
+            }
+            else
+            {
+                if (w->getRight()->getNodeColor() == BLACK)
+                {
+                    w->getLeft()->setNodeColor(BLACK);
+                    w->setNodeColor(RED);
+                    rotateRight(w);
+                    w = x->getParent()->getRight();
+                }
+                w->setNodeColor(x->getParent()->getNodeColor());
+                x->getParent()->setNodeColor(BLACK);
+                w->getRight()->setNodeColor(BLACK);
+                rotateLeft(x->getParent());
+                x = this->_root;
+            }
         }
         else
         {
-            if (f)
+
+            w = x->getParent()->getLeft();
+
+            // Case 1:
+            if (w->getNodeColor() == RED)
+            {
+                w->setNodeColor(BLACK);
+                x->getParent()->setNodeColor(RED);
+                rotateRight(x->getParent());
+                w = x->getParent()->getLeft();
+            }
+
+            // Case 2:
+            if (w->getRight()->getNodeColor() == BLACK && w->getLeft()->getNodeColor() == BLACK)
+            {
+                w->setNodeColor(RED);
+
+                // Move X up one level
+                x = x->getParent();
+            }
+            else
+            {
+                if (w->getLeft()->getNodeColor() == BLACK)
+                {
+                    w->getRight()->setNodeColor(BLACK);
+                    w->setNodeColor(RED);
+                    rotateLeft(w);
+                    w = x->getParent()->getLeft();
+                }
+                w->setNodeColor(x->getParent()->getNodeColor());
+                x->getParent()->setNodeColor(BLACK);
+                w->getLeft()->setNodeColor(BLACK);
+                rotateRight(x->getParent());
+                x = this->_root;
+            }
         }
-
     }
+    x->setNodeColor(BLACK);
 }
-
-
 
 /**
  * Minimum
@@ -384,3 +447,73 @@ RBNode *RedBlackTree::maximum(RBNode *x)
     }
     return x;
 }
+
+RBNode *RedBlackTree::findNode(RBNode *x, int key)
+{
+    RBNode *searchPtr;
+    searchPtr = x;
+    while (searchPtr != nullptr && key != searchPtr->getKey())
+    {
+        if (key < searchPtr->getKey())
+        {
+            searchPtr = searchPtr->getLeft();
+        }
+        else
+        {
+            searchPtr = searchPtr->getRight();
+        }
+    }
+
+    return searchPtr;
+}
+
+void RedBlackTree::insert(int key, std::string value)
+{
+    RBNode *newNode;
+    newNode = new RBNode();
+
+    if (newNode != nullptr)
+    {
+        newNode->setKey(key);
+        newNode->setValue(value);
+        this->insertNode(newNode);
+        this->size++;
+    }
+}
+
+void RedBlackTree::remove(int key)
+{
+    RBNode *nodeToRemove;
+    nodeToRemove = findNode(this->_root, key);
+    if (nodeToRemove != nullptr)
+    {
+        this->deleteNode(nodeToRemove);
+        this->size--;
+    }
+    else
+    {
+        std::cout << "Node not found!\n";
+    }
+}
+
+bool RedBlackTree::findKey(int key)
+{
+    return findNode(this->_root, key) != nullptr;
+}
+
+std::string RedBlackTree::getValue(int key)
+{
+    RBNode *returnNode;
+
+    returnNode = findNode(this->_root, key);
+
+    if (returnNode != nullptr)
+    {
+        return returnNode->getValue();
+    }
+    return "Key not found and thus no value exists.\n";
+}
+
+bool RedBlackTree::isEmpty() const
+{ return this->_root == nullptr; }
+

@@ -3,14 +3,15 @@
 //
 
 #include "RBNode.h"
+
 RBNode::RBNode()
 {
 
-    this->key = -1;
+    this->key   = -1;
     this->value = "";
-    this->left = nullptr;
-    this->right= nullptr;
-    this->parent= nullptr;
+    this->left  = nullptr;
+    this->right  = nullptr;
+    this->parent = nullptr;
     this->nodeColor = RED;
 }
 
