@@ -61,13 +61,16 @@ int main()
                 cityDictionary.insert(tempKey, tempString);
             }
 
+            cityDictionary.printTree();
         }
         inputString = "";
         tempString  = "";
         tempKey     = 0;
+
     }
 
     inputFile.close();
+
     return 0;
 
 }

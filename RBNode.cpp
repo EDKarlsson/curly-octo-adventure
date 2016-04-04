@@ -7,11 +7,11 @@
 RBNode::RBNode()
 {
 
-    this->key   = -1;
-    this->value = "";
-    this->left  = nullptr;
-    this->right  = nullptr;
-    this->parent = nullptr;
+    this->key       = -1;
+    this->value     = "";
+    this->left      = nullptr;
+    this->right     = nullptr;
+    this->parent    = nullptr;
     this->nodeColor = RED;
 }
 
@@ -73,4 +73,22 @@ color RBNode::getNodeColor() const
 void RBNode::setNodeColor(color nodeColor)
 {
     this->nodeColor = nodeColor;
+}
+
+std::string RBNode::getColorString() const
+{
+    if (this->key != -1)
+    {
+        if (this->nodeColor == RED)
+        {
+            return "R";
+        }
+        return "B";
+    }
+    return "";
+}
+
+std::string RBNode::getKeyColorValue() const
+{
+    return this->key + " " + this->getColorString() + " " + this->value;
 }

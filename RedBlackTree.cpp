@@ -6,14 +6,23 @@
 
 RedBlackTree::RedBlackTree()
 {
-    this->_root = nullptr;
-    this->size  = 0;
+    this->size = 0;
+    this->nil  = new RBNode;
+    nil->setNodeColor(BLACK);
+    nil->setValue("NIL");
+    this->_root = nil;
+
 }
 
 void RedBlackTree::rotateLeft(RBNode *x)
 {
     RBNode *y;
 
+    outputDivider();
+
+    std::cout << "Rotate left around the subtree : " << x->getKey() << std::endl;
+
+    outputDivider();
 
     // Set y to be the right child of x
     y = x->getRight();
@@ -22,7 +31,7 @@ void RedBlackTree::rotateLeft(RBNode *x)
     x->setRight(y->getLeft());
 
     // If the left child of y is not nil
-    if (y->getLeft() != nullptr)
+    if (y->getLeft() != this->nil)
     {
         // Set the parent of the left child to now be x
         y->getLeft()->setParent(x);
@@ -32,7 +41,7 @@ void RedBlackTree::rotateLeft(RBNode *x)
     y->setParent(x->getParent());
 
     // If the parent of x is null (Meaning it has not parent and thus is the root)
-    if (x->getParent() == nullptr)
+    if (x->getParent() == this->nil)
     {
         // Set y to be the new root of the tree
         this->_root = y;
@@ -65,6 +74,12 @@ void RedBlackTree::rotateRight(RBNode *y)
 {
     RBNode *x;
 
+    outputDivider();
+
+    std::cout << "Rotate right around the subtree : " << y->getKey() << std::endl;
+
+    outputDivider();
+
     // Set x to be the left child of y
     x = y->getLeft();
 
@@ -72,7 +87,7 @@ void RedBlackTree::rotateRight(RBNode *y)
     y->setLeft(x->getRight());
 
     // if the right child of x is not nullptr
-    if (x->getRight() != nullptr)
+    if (x->getRight() != this->nil)
     {
         // Set the parent of the right child of x to be y
         x->getRight()->setParent(y);
@@ -82,7 +97,7 @@ void RedBlackTree::rotateRight(RBNode *y)
     x->setParent(y->getParent());
 
     // Check if the parent of y is nullptr (Meaning y is the root node)
-    if (y->getParent() == nullptr)
+    if (y->getParent() == this->nil)
     {
         // Set x to be the new root
         this->_root = x;
@@ -117,10 +132,17 @@ void RedBlackTree::insertNode(RBNode *insertNode)
     RBNode *y;
     RBNode *x;
 
-    y = nullptr;
+    y = this->nil;
     x = this->_root;
 
-    while (x != nullptr)
+    outputDivider();
+
+    std::cout << "Inserting the key [ " << std::left << std::setw(3) << insertNode->getKey() << "] with the value : "
+    << insertNode->getValue() << std::endl;
+
+    outputDivider();
+
+    while (x != this->nil)
     {
         y = x;
         if (insertNode->getKey() < x->getKey())
@@ -134,7 +156,7 @@ void RedBlackTree::insertNode(RBNode *insertNode)
     }
     insertNode->setParent(y);
 
-    if (y == nullptr)
+    if (y == this->nil)
     {
         this->_root = insertNode;
     }
@@ -164,69 +186,65 @@ void RedBlackTree::insert_fixup(RBNode *z)
 {
     RBNode *y;
 
-    if (z != this->_root)
+    while (z->getParent()->getNodeColor() == RED)
     {
-
-        while (z->getParent()->getNodeColor() == RED)
+        // Check to see if the violation is occurring on the left side of the tree
+        if (z->getParent() == z->getParent()->getParent()->getLeft())
         {
-            // Check to see if the violation is occurring on the left side of the tree
-            if (z->getParent() == z->getParent()->getParent()->getLeft())
+            y = z->getParent()->getParent()->getRight();
+
+            // Case 1: If the color of z's grandparent's right child is red
+            if (y->getNodeColor() == RED)
             {
-                y = z->getParent()->getParent()->getRight();
-
-                // Case 1: If the color of z's grandparent's right child is red
-                if (y->getNodeColor() == RED)
-                {
-                    z->getParent()->setNodeColor(BLACK);
-                    y->setNodeColor(BLACK);
-                    z->getParent()->getParent()->setNodeColor(RED);
-                    z = z->getParent()->getParent();
-                }
-                else
-                {
-                    // Case 2:
-                    if (z == z->getParent()->getRight())
-                    {
-                        z = z->getParent();
-                        rotateLeft(z);
-                    }
-
-                    // Case 3: Case 2 falls through into case 3 because these two cases are not mutually exclusive
-                    z->getParent()->setNodeColor(BLACK);
-                    z->getParent()->getParent()->setNodeColor(RED);
-                    rotateRight(z->getParent()->getParent());
-                }
+                z->getParent()->setNodeColor(BLACK);
+                y->setNodeColor(BLACK);
+                z->getParent()->getParent()->setNodeColor(RED);
+                z = z->getParent()->getParent();
             }
             else
             {
-                // Checking the violation on the right side of the tree.
-                y = z->getParent()->getParent()->getLeft();
-
-                // Case 1: If the color of z's grandparent's right child is red
-                if (y->getNodeColor() == RED)
+                // Case 2:
+                if (z == z->getParent()->getRight())
                 {
-                    z->getParent()->setNodeColor(BLACK);
-                    y->setNodeColor(BLACK);
-                    z->getParent()->getParent()->setNodeColor(RED);
-                    z = z->getParent()->getParent();
+                    z = z->getParent();
+                    rotateLeft(z);
                 }
-                else
-                {
-                    // Case 2:
-                    if (z == z->getParent()->getLeft())
-                    {
-                        z = z->getParent();
-                        // DEBUG: IF there are issues where to tree is not behaving the way it should then I may need to switch
-                        //      the rotateRight and rotateLeft methods
-                        rotateRight(z);
-                    }
 
-                    // Case 3: Case 2 falls through into case 3 because these two cases are not mutually exclusive
-                    z->getParent()->setNodeColor(BLACK);
-                    z->getParent()->getParent()->setNodeColor(RED);
-                    // DEBUG: May need to switch this to rotateRight
-                    rotateLeft(z->getParent()->getParent());
+                // Case 3: Case 2 falls through into case 3 because these two cases are not mutually exclusive
+                z->getParent()->setNodeColor(BLACK);
+                z->getParent()->getParent()->setNodeColor(RED);
+                rotateRight(z->getParent()->getParent());
+            }
+        }
+        else
+        {
+            // Checking the violation on the right side of the tree.
+            y = z->getParent()->getParent()->getLeft();
+
+            // Case 1: If the color of z's grandparent's right child is red
+            if (y->getNodeColor() == RED)
+            {
+                z->getParent()->setNodeColor(BLACK);
+                y->setNodeColor(BLACK);
+                z->getParent()->getParent()->setNodeColor(RED);
+                z = z->getParent()->getParent();
+            }
+            else
+            {
+                // Case 2:
+                if (z == z->getParent()->getLeft())
+                {
+                    z = z->getParent();
+                    // DEBUG: IF there are issues where to tree is not behaving the way it should then I may need to switch
+                    //      the rotateRight and rotateLeft methods
+                    rotateRight(z);
                 }
+
+                // Case 3: Case 2 falls through into case 3 because these two cases are not mutually exclusive
+                z->getParent()->setNodeColor(BLACK);
+                z->getParent()->getParent()->setNodeColor(RED);
+                // DEBUG: May need to switch this to rotateRight
+                rotateLeft(z->getParent()->getParent());
             }
         }
     }
@@ -246,7 +264,7 @@ void RedBlackTree::insert_fixup(RBNode *z)
 
 void RedBlackTree::transplant(RBNode *u, RBNode *v)
 {
-    if (u->getParent() == nullptr)
+    if (u->getParent() == this->nil)
     {
         this->_root = v;
     }
@@ -280,12 +298,12 @@ void RedBlackTree::deleteNode(RBNode *deleteNode)
 
     y_original_color = y->getNodeColor();
 
-    if (deleteNode->getLeft() == nullptr)
+    if (deleteNode->getLeft() == this->nil)
     {
         x = deleteNode->getRight();
         transplant(deleteNode, deleteNode->getRight());
     }
-    else if (deleteNode->getRight() == nullptr)
+    else if (deleteNode->getRight() == this->nil)
     {
         x = deleteNode->getLeft();
         transplant(deleteNode, deleteNode->getLeft());
@@ -318,7 +336,7 @@ void RedBlackTree::deleteNode(RBNode *deleteNode)
     {
         delete_fixup(x);
     }
-
+    delete deleteNode;
 }
 
 void RedBlackTree::delete_fixup(RBNode *x)
@@ -420,7 +438,7 @@ void RedBlackTree::delete_fixup(RBNode *x)
  */
 RBNode *RedBlackTree::minimum(RBNode *x)
 {
-    if (x->getLeft() != nullptr)
+    if (x->getLeft() != this->nil)
     {
         minimum(x->getLeft());
     }
@@ -440,7 +458,7 @@ RBNode *RedBlackTree::minimum(RBNode *x)
  */
 RBNode *RedBlackTree::maximum(RBNode *x)
 {
-    if (x->getRight() != nullptr)
+    if (x->getRight() != this->nil)
     {
         maximum(x->getRight());
     }
@@ -451,7 +469,7 @@ RBNode *RedBlackTree::findNode(RBNode *x, int key)
 {
     RBNode *searchPtr;
     searchPtr = x;
-    while (searchPtr != nullptr && key != searchPtr->getKey())
+    while (searchPtr != this->nil && key != searchPtr->getKey())
     {
         if (key < searchPtr->getKey())
         {
@@ -475,6 +493,10 @@ void RedBlackTree::insert(int key, std::string value)
     {
         newNode->setKey(key);
         newNode->setValue(value);
+        newNode->setParent(this->nil);
+        newNode->setRight(this->nil);
+        newNode->setLeft(this->nil);
+
         this->insertNode(newNode);
         this->size++;
     }
@@ -484,7 +506,12 @@ void RedBlackTree::remove(int key)
 {
     RBNode *nodeToRemove;
     nodeToRemove = findNode(this->_root, key);
-    if (nodeToRemove != nullptr)
+
+    outputDivider();
+    std::cout << "Removing " << key << " from the tree\n";
+    outputDivider();
+
+    if (nodeToRemove != this->nil)
     {
         this->deleteNode(nodeToRemove);
         this->size--;
@@ -506,7 +533,7 @@ std::string RedBlackTree::getValue(int key)
 
     returnNode = findNode(this->_root, key);
 
-    if (returnNode != nullptr)
+    if (returnNode != this->nil)
     {
         return returnNode->getValue();
     }
@@ -517,8 +544,7 @@ bool RedBlackTree::isEmpty() const
 { return this->_root == nullptr; }
 
 // Print the branches and node (eg, ___10___ )
-void RedBlackTree::printNodes(int branchLen, int nodeSpaceLen, int startLen, int nodesInThisLevel,
-                              const std::deque<RBNode *> &nodesQueue, std::ostream &out)
+void RedBlackTree::printNodes(int branchLen, int nodeSpaceLen, int startLen, int nodesInThisLevel, const std::deque<RBNode *> &nodesQueue, std::ostream &out)
 {
     typename std::deque<RBNode *>::const_iterator iter = nodesQueue.begin();
 
@@ -527,7 +553,8 @@ void RedBlackTree::printNodes(int branchLen, int nodeSpaceLen, int startLen, int
         out << ((i == 0) ? std::setw(startLen) : std::setw(nodeSpaceLen)) << ""
         << ((*iter && (*iter)->getLeft()) ? std::setfill('_') : std::setfill(' '));
 
-        out << std::setw(branchLen + 2) << ((*iter) ? intToString((*iter)->getKey()) : "");
+        out << std::setw(branchLen + 2) << ((*iter) ? intToString((*iter)->getKey()) + " " + (*iter)->getColorString() : "");
+//        out << std::setw(branchLen + 2) << ((*iter) ? (*iter)->getColorString() : "");
         out << ((*iter && (*iter)->getRight()) ? std::setfill('_') : std::setfill(' ')) << std::setw(branchLen) << ""
         << std::setfill(' ');
     }
@@ -535,8 +562,7 @@ void RedBlackTree::printNodes(int branchLen, int nodeSpaceLen, int startLen, int
 }
 
 // Print the leaves only (just for the bottom row)
-void RedBlackTree::printLeaves(int indentSpace, int level, int nodesInThisLevel, const std::deque<RBNode *> &nodesQueue,
-                               std::ostream &out)
+void RedBlackTree::printLeaves(int indentSpace, int level, int nodesInThisLevel, const std::deque<RBNode *> &nodesQueue, std::ostream &out)
 {
     typename std::deque<RBNode *>::const_iterator iter = nodesQueue.begin();
     for (int                                      i    = 0; i < nodesInThisLevel; i++, iter++)
@@ -597,7 +623,7 @@ void RedBlackTree::printPretty(RBNode *root, int level, int indentSpace, std::os
 
 void RedBlackTree::printTree()
 {
-    printPretty(_root, 2, 0, std::cout);
+    printPretty(_root, 4, 5, std::cout);
 }
 
 int RedBlackTree::getSize() const
@@ -612,12 +638,9 @@ std::string RedBlackTree::intToString(int val)
 }
 
 // Print the arm branches (eg, /    \ ) on a line
-void RedBlackTree::printBranches(int branchLen, int nodeSpaceLen, int startLen, int nodesInThisLevel,
-                                 const std::deque<RBNode *> &nodesQueue, std::ostream &out)
+void RedBlackTree::printBranches(int branchLen, int nodeSpaceLen, int startLen, int nodesInThisLevel, const std::deque<RBNode *> &nodesQueue, std::ostream &out)
 {
-
     typename std::deque<RBNode *>::const_iterator iter = nodesQueue.begin();
-
     for (int i = 0; i < nodesInThisLevel / 2; i++)
     {
         out << ((i == 0) ? std::setw(startLen - 1) : std::setw(nodeSpaceLen - 2)) << "" << ((*iter++) ? "/" : " ");
@@ -634,4 +657,10 @@ int RedBlackTree::maxHeight(RBNode *p)
     int leftHeight  = maxHeight(p->getLeft());
     int rightHeight = maxHeight(p->getRight());
     return (leftHeight > rightHeight) ? leftHeight + 1 : rightHeight + 1;
+}
+
+void RedBlackTree::outputDivider() const
+{
+    std::cout << std::left << std::setfill('-') << std::setw(OUTPUT_DIVIDER) << "-" << std::endl << std::setfill(' ')
+    << std::right;
 }

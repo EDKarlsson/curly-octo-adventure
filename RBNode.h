@@ -43,6 +43,10 @@ class RBNode
 
         color       getNodeColor() const;
 
+        std::string getColorString() const;
+
+        std::string getKeyColorValue() const;
+
     private:
         int         key;
         std::string value;

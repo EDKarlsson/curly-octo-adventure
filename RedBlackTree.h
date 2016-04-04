@@ -35,6 +35,8 @@ class RedBlackTree
 
         RBNode *nil;
 
+        const int OUTPUT_DIVIDER = 150;
+
         int size;
 
         void rotateRight(RBNode *y);
@@ -67,11 +69,12 @@ class RedBlackTree
 
         void printPretty(RBNode *root, int level, int indentSpace, std::ostream &out);
 
-        void        printLeaves(int indentSpace, int level, int nodesInThisLevel,
-                                const std::deque<RBNode *> &nodesQueue, std::ostream &out);
+        void printLeaves(int indentSpace, int level, int nodesInThisLevel,
+                         const std::deque<RBNode *> &nodesQueue, std::ostream &out);
 
         std::string intToString(int val);
 
+        void outputDivider() const;
 };
 
 #endif //RED_BLACK_TREE_DICTIONARY_REDBLACKTREE_H
