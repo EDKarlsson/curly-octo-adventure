@@ -6,6 +6,10 @@
 #define RED_BLACK_TREE_DICTIONARY_REDBLACKTREE_H
 
 #include "RBNode.h"
+#include <sstream>
+#include <deque>
+#include <iomanip>
+#include <cmath>
 
 class RedBlackTree
 {
@@ -24,9 +28,12 @@ class RedBlackTree
 
         int getSize() const;
 
+        void printTree();
 
     private:
         RBNode *_root;
+
+        RBNode *nil;
 
         int size;
 
@@ -49,6 +56,22 @@ class RedBlackTree
         RBNode *findNode(RBNode *x, int key);
 
         void insertNode(RBNode *insertNode);
+
+        void printNodes(int branchLen, int nodeSpaceLen, int startLen, int nodesInThisLevel,
+                        const std::deque<RBNode *> &nodesQueue, std::ostream &out);
+
+        int maxHeight(RBNode *p);
+
+        void printBranches(int branchLen, int nodeSpaceLen, int startLen, int nodesInThisLevel,
+                           const std::deque<RBNode *> &nodesQueue, std::ostream &out);
+
+        void printPretty(RBNode *root, int level, int indentSpace, std::ostream &out);
+
+        void        printLeaves(int indentSpace, int level, int nodesInThisLevel,
+                                const std::deque<RBNode *> &nodesQueue, std::ostream &out);
+
+        std::string intToString(int val);
+
 };
 
 #endif //RED_BLACK_TREE_DICTIONARY_REDBLACKTREE_H

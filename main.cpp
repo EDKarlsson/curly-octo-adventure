@@ -1,6 +1,6 @@
 #include <regex>
 #include <fstream>
-#include "Dictionary.h"
+#include "RedBlackTree.h"
 
 using namespace std;
 
@@ -14,8 +14,7 @@ int main()
             " * Extra Credit : Red-Black Tree Dictionary\n"
             " *************************************************************************/\n";
 
-    Dictionary cityDictionary;
-    Dictionary inputCity;
+    RedBlackTree cityDictionary;
 
     // Regex Variables
     std::regex  keyRegex("[0-9][0-9]");
@@ -30,8 +29,7 @@ int main()
     std::string            tempString = "";
     int                    tempKey    = 0;
 
-    inputFile.open(
-            "/Users/dank/Dropbox/School/CS1D/2016_Spring/Assignments/cs1d-assignments/Assignment-09/inputFile.txt");
+    inputFile.open("/Users/dank/Dropbox/School/CS1D/2016_Spring/Extra-credit/red-black-tree-dictionary/inputFile.txt");
     while (!inputFile.eof())
     {
         std::getline(inputFile, inputString);
@@ -46,7 +44,7 @@ int main()
                     tempString = stringMatch.str().c_str();
                     tempKey    = std::stoi(tempString, &sz);
 
-                    cityDictionary.remove(long(tempKey));
+                    cityDictionary.remove(tempKey);
                 }
             }
             else
@@ -55,17 +53,13 @@ int main()
                 if (std::regex_search(inputString, stringMatch, keyRegex))
                 {
                     tempKey = std::stoi(stringMatch.str().c_str(), &sz);
-                    inputCity.setKey(tempKey);
                 }
                 if (std::regex_search(inputString, stringMatch, nameRegex))
                 {
                     tempString = stringMatch.str().c_str();
-                    inputCity.setName(tempString);
                 }
-                cityDictionary.insert(tempKey, inputCity);
+                cityDictionary.insert(tempKey, tempString);
             }
-
-            cityDictionary.outputList();
 
         }
         inputString = "";
