@@ -10,6 +10,7 @@
 #include <deque>
 #include <iomanip>
 #include <cmath>
+#include <vector>
 
 class RedBlackTree
 {
@@ -23,6 +24,8 @@ class RedBlackTree
         bool findKey(int key);
 
         std::string getValue(int key);
+
+        std::vector<std::string> getAllValues(int key);
 
         bool isEmpty() const;
 

@@ -75,6 +75,12 @@ void RBNode::setNodeColor(color nodeColor)
     this->nodeColor = nodeColor;
 }
 
+/**
+ * getColorString
+ * -----
+ *
+ * return String
+ */
 std::string RBNode::getColorString() const
 {
     if (this->key != -1)
@@ -88,6 +94,12 @@ std::string RBNode::getColorString() const
     return "";
 }
 
+/**
+ * getKeyColorValue
+ * ------
+ *
+ * return String
+ */
 std::string RBNode::getKeyColorValue() const
 {
     return this->key + " " + this->getColorString() + " " + this->value;

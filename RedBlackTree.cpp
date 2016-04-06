@@ -80,6 +80,7 @@ void RedBlackTree::rotateRight(RBNode *y)
 
     outputDivider();
 
+
     // Set x to be the left child of y
     x = y->getLeft();
 
@@ -544,7 +545,8 @@ bool RedBlackTree::isEmpty() const
 { return this->_root == nullptr; }
 
 // Print the branches and node (eg, ___10___ )
-void RedBlackTree::printNodes(int branchLen, int nodeSpaceLen, int startLen, int nodesInThisLevel, const std::deque<RBNode *> &nodesQueue, std::ostream &out)
+void RedBlackTree::printNodes(int branchLen, int nodeSpaceLen, int startLen, int nodesInThisLevel,
+                              const std::deque<RBNode *> &nodesQueue, std::ostream &out)
 {
     typename std::deque<RBNode *>::const_iterator iter = nodesQueue.begin();
 
@@ -553,7 +555,8 @@ void RedBlackTree::printNodes(int branchLen, int nodeSpaceLen, int startLen, int
         out << ((i == 0) ? std::setw(startLen) : std::setw(nodeSpaceLen)) << ""
         << ((*iter && (*iter)->getLeft()) ? std::setfill('_') : std::setfill(' '));
 
-        out << std::setw(branchLen + 2) << ((*iter) ? intToString((*iter)->getKey()) + " " + (*iter)->getColorString() : "");
+        out << std::setw(branchLen + 2)
+        << ((*iter) ? intToString((*iter)->getKey()) + " " + (*iter)->getColorString() : "");
 //        out << std::setw(branchLen + 2) << ((*iter) ? (*iter)->getColorString() : "");
         out << ((*iter && (*iter)->getRight()) ? std::setfill('_') : std::setfill(' ')) << std::setw(branchLen) << ""
         << std::setfill(' ');
@@ -562,7 +565,8 @@ void RedBlackTree::printNodes(int branchLen, int nodeSpaceLen, int startLen, int
 }
 
 // Print the leaves only (just for the bottom row)
-void RedBlackTree::printLeaves(int indentSpace, int level, int nodesInThisLevel, const std::deque<RBNode *> &nodesQueue, std::ostream &out)
+void RedBlackTree::printLeaves(int indentSpace, int level, int nodesInThisLevel, const std::deque<RBNode *> &nodesQueue,
+                               std::ostream &out)
 {
     typename std::deque<RBNode *>::const_iterator iter = nodesQueue.begin();
     for (int                                      i    = 0; i < nodesInThisLevel; i++, iter++)
@@ -638,10 +642,11 @@ std::string RedBlackTree::intToString(int val)
 }
 
 // Print the arm branches (eg, /    \ ) on a line
-void RedBlackTree::printBranches(int branchLen, int nodeSpaceLen, int startLen, int nodesInThisLevel, const std::deque<RBNode *> &nodesQueue, std::ostream &out)
+void RedBlackTree::printBranches(int branchLen, int nodeSpaceLen, int startLen, int nodesInThisLevel,
+                                 const std::deque<RBNode *> &nodesQueue, std::ostream &out)
 {
     typename std::deque<RBNode *>::const_iterator iter = nodesQueue.begin();
-    for (int i = 0; i < nodesInThisLevel / 2; i++)
+    for (int                                      i    = 0; i < nodesInThisLevel / 2; i++)
     {
         out << ((i == 0) ? std::setw(startLen - 1) : std::setw(nodeSpaceLen - 2)) << "" << ((*iter++) ? "/" : " ");
         out << std::setw(2 * branchLen + 2) << "" << ((*iter++) ? "\\" : " ");
@@ -663,4 +668,25 @@ void RedBlackTree::outputDivider() const
 {
     std::cout << std::left << std::setfill('-') << std::setw(OUTPUT_DIVIDER) << "-" << std::endl << std::setfill(' ')
     << std::right;
+}
+
+std::vector<std::string> RedBlackTree::getAllValues(int key)
+{
+    RBNode *srchPtr;
+    std::vector<std::string> values;
+
+    srchPtr = this->_root;
+
+    srchPtr  = findNode(this->_root, key);
+    while (srchPtr->getKey() != -1)
+    {
+        if (srchPtr->getKey() == key)
+        {
+            values.push_back(srchPtr->getValue());
+        }
+        srchPtr = findNode(srchPtr->getRight(), key);
+    }
+
+
+    return values;
 }
